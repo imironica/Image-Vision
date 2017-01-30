@@ -1,0 +1,309 @@
+﻿<div class="wrapper container body-content" style="margin-top:0px; padding-top:0px;">
+    <div ng-app="searchEngineApp" ng-controller="SearchEngineCtrl" ng-cloak>
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <img src="~/Images/logo.png" style="height:50px; width:90px" />
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Databases <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="database in databases">
+                                    <a href="" ng-click="setDatabase(database.Code)"><span ng-class="database.Icon" />&nbsp;{{database.Name}}</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a href="#" id="navigation-toggle" ng-click="toggleState()"><span class="glyphicon glyphicon-cog" />&nbsp;Options</a>   </li>
+                        <li><a href="~/Home/View3D" id="navigation-toggle"><span class="glyphicon glyphicon-cog" />&nbsp;3D View</a>   </li>
+                        <li><a data-target="#helpModal" data-toggle="modal" style="cursor: pointer;">Help</a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="sidebar" sidebar-directive="state">
+                <div class="navigation">
+                    <br /><br /><br />
+                    <div class="container">
+                        <div style="float:right; clear:both;">
+                            <a href="#" id="navigation-toggle" ng-click="toggleState()">
+                                <span ng-if="state==true"><span class="glyphicon glyphicon-chevron-right"></span></span>
+                                <span ng-if="state==false"><span class="glyphicon glyphicon-chevron-left"></span>Close </span>
+                            </a>
+                        </div>
+                        <br />
+                        <br />
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="pill" href="#home">Favourites</a></li>
+                            <li><a data-toggle="pill" href="#menu1">History</a></li>
+                            <li><a data-toggle="pill" href="#menu2">System settings</a></li>
+                        </ul>
+
+                        <div class="tab-content" style="overflow-y:scroll; max-height:650px;">
+                            <div id="home" class="tab-pane fade in active">
+                                <h3>Favourites</h3>
+                                <div ng-repeat="image in imagesFavourites" class="col-md-3 col-sm-4 col-xs-6 cell-grid-history">
+                                    <a ng-click="searchImage(image.ImageUrl)" style="cursor: pointer; clear: both;">
+                                        <img class="img-show-history" ng-src="{{image.Root}}/{{image.ImageUrl}}" alt="{{image.Description}}" />
+                                    </a>
+                                    <br />
+                                </div>
+                            </div>
+                            <div id="menu1" class="tab-pane fade">
+                                <h3>History</h3>
+                                <div ng-repeat="image in imagesHistory track by $index" class="col-md-3 col-sm-4 col-xs-6 cell-grid-history">
+                                    <a ng-click="searchImage(image.ImageUrl)" style="cursor: pointer; clear: both;">
+                                        <img class="img-show-history" ng-src="{{image.Root}}/{{image.ImageUrl}}" alt="{{image.Description}}" />
+                                    </a>
+                                    <br />
+                                </div>
+                            </div>
+                            <div id="menu2" class="tab-pane fade">
+                                <h3>System settings</h3>
+
+
+                                <div class="panel-body">
+                                    <div class="form-group col-md-12 col-xs-12">
+                                        <label for="nrOfImages">Number of provided images:</label>
+                                        <input type="text" class="form-control" id="nrOfImages" ng-model="numberOfImages" ng-bind="numberOfImages" value="20" />
+                                    </div>
+                                    <div class="form-group col-md-12 col-xs-12">
+                                        <label for="selectDescriptors">Select descriptors:</label>
+                                        <select name="selectDescriptors" id="selectDescriptors" ng-model="selectedDescriptor" class="form-control">
+                                            <option ng-repeat="option in descriptors" value="{{option.Id}}" ng-selected="option.Id == selectedDescriptor">{{option.Name}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-12 col-xs-12">
+                                        <label for="selectMetrics">Select metric:</label>
+                                        <select name="selectMetrics" id="selectMetrics" ng-model="selectedMetric" class="form-control">
+                                            <option ng-repeat="option in metrics" value="{{option.Id}}">{{option.Name}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-12 col-xs-12">
+                                        <label for="selectMetrics">Select processing method:</label>
+                                        <select name="selectProcessing" id="selectProcessing" class="form-control" ng-model="selectedProcessing">
+                                            <option value="1" selected="selected">One CPU</option>
+                                            <option value="2">Multiple CPUs</option>
+                                            <option value="3">GPU</option>
+                                            <option value="4">Mongo DB (Map Reduce)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-12 col-xs-12">
+                                        <label for="selectMetrics">Select Relevance Feedback:</label>
+                                        <select name="selectRF" id="selectRF" class="form-control" ng-model="selectedRF">
+                                            <option value="1" selected="selected">Relevance Feature Estimation</option>
+                                            <option value="2">Rocchio</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+        <div style="margin: 0 auto;">
+            <img src="~/Images/loading.gif" ng-show="showLoader" style="z-index: 1000; position: absolute; margin: 0;" />
+        </div>
+        <br />
+        <div class="alert alert-success fade in" style="display:none;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Success!</strong> This alert box could indicate a successful or positive action.
+        </div>
+        <div class="alert alert-danger fade in" ng-show="isError">
+            <a href="#" class="close" ng-click="hideAlert()" aria-label="close">&times;</a>
+            <strong>Error!</strong> {{ErrorMessage}}
+        </div>
+
+        <div style="clear:both; margin-top:0px;">
+            <div class="col-md-2 col-xs-0"></div>
+            <div class="col-md-10 col-xs-12" style="margin:10px; margin-left:20px; cursor:pointer; margin-top:10px;">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="searchDocument"> Search similar images
+                    </label>
+                </div>
+                <div class="col-md-10 col-xs-12" ng-show="searchDocument">
+                    <div style="float:left">
+                        <input type="text" ng-model="searchImageLink" class="form-control" placeholder="Image link: e.g., http://...." style="width:400px;" />
+                    </div>
+                    <div style="float:left">
+                        <button type="button" class="btn btn-info" ng-click="searchImageFromLink()">Search similar images</button>
+                    </div>
+                    <div style="float:right">
+                        <img ng-src="{{searchImageLink}}" class="img-show" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="clear:both; margin-top:10px;">
+            <div class="col-md-2 col-xs-0"></div>
+            <div class="col-md-10 col-xs-12" style="margin:10px; margin-left:20px;">
+                <button type="button" class="btn btn-info" ng-click="reloadImages()">View random images</button>
+                <button type="button" class="btn btn-info" ng-click="searchRelevanceFeedback()" ng-hide="numberOfSelectedImages == 0">Search images</button>
+                <button type="button" class="btn btn-info" ng-click="resetRelevance()" ng-hide="numberOfSelectedImages == 0">Unselect all</button>
+            </div>
+        </div>
+        <br />
+        <br />
+
+
+        <div class="row" style="margin-left:20px;">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div ng-repeat="image in images" class="col-md-3 col-sm-4 col-xs-6 cell-grid" ng-class="images[$index].selected== true ? 'cell-grid-selected': 'cell-grid'">
+                    <a ng-click="searchImage(image.ImageUrl)" style="cursor: pointer; clear: both;">
+                        <img class="img-show fade-in three" ng-src="{{image.Root}}/{{image.ImageUrl}}" alt="{{image.Description}}" />
+                    </a>
+
+                    <!-- Single button -->
+                    <div class="btn-group" style=" position:relative; float:right;">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Option <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a ng-click="searchImage(image.ImageUrl)" style="cursor: pointer; clear: both;">
+                                    Search similar images
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="searchImagesSameEvent(image.ImageUrl)" style="cursor: pointer; clear: both;">
+                                    Search images same category
+                                </a>
+                            </li>
+
+                            <li role="separator" class="divider"></li>
+                            <li>
+                                <a ng-click="showImage(image,$index)" style="cursor: pointer; clear: both;" data-toggle="modal" data-target="#imageModal">
+                                    View image
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="selectImage($index)" style="cursor: pointer; clear: both;">
+                                    Select image <i>
+                                        <span ng-if="images[$index].selected === true"><span class="fa-times" />as Unrelevant</span>
+                                        <span ng-if="images[$index].selected === false"><span class="fa-check" />Relevant</span>
+
+                                    </i>
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="selectFavourite($index)" style="cursor: pointer; clear: both;">
+                                    <span class="fa fa-bookmark" /> Select image as <i>Favourite</i>
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <br />
+
+                    <br />
+
+                </div>
+            </div>
+            <div class="col-md-1">
+
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content col-lg-12">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">View image</h4>
+                    </div>
+                    <div class="modal-body col-lg-12 popup-view-image">
+                        <img ng-src="{{currentImage.Root + '/' + currentImage.ImageUrl}}" class="modal-body col-lg-12 popup-view-image" />
+
+                        <br /> Image name: {{currentImage.ImageUrl}}
+                        <br /> Image description: {{currentImage.Description}}
+                        <br /> Image source: {{currentImage.Root}}
+                        <br /> Similarity score: {{image.Distance}}
+                        <div style="float:right; clear:both; margin-right:20px;">
+                            <span ng-if="currentIndex > 0">
+                                <a href="#" id="navigation-toggle" ng-click="showPreviousImage(currentIndex)">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                            </span>
+
+                            <span ng-if="currentIndex < numberOfImages-1">
+                                <a href="#" id="navigation-toggle" ng-click="showNextImage(currentIndex)">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="clear:both;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content col-lg-12" style="width: 700px;">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                    </div>
+                    <div class="modal-body col-lg-12" style="max-width: 750px; max-height: 700px; text-align: justify;">
+                        <img src="~/Images/logo.png" style="height:50px; width:90px" /><strong>Search Engine Image Retrieval ID-Search - v1.0 alpha</strong> <br /><br />
+
+
+                        <strong>How it works</strong><br /><br />
+                        <i>ID-Search</i> uses image recognition to index an image collection. It creates a unique fingerprint for each image in the collection and does not use any data associated with the images
+                        to create the image recognition based fingerprint. These unique digital fingerprints describe the patterns found in the pixels of the images. <i>ID-Search</i> is able to identify even partial
+                        matches of these fingerprints.
+                        <br />  <i>ID-Search</i>  creates an index of all the images’ fingerprints for reference and stores them in an internal database.
+                        API calls are used to add images to the index and to search through existing images.
+                        Image matching is quick, and scales to handle hundreds of millions of images.
+                        <br /><br />
+                        <strong>Technologies</strong><br /><br />
+                        Frontend: Bootstrap & Angular JS<br />
+                        Backend: Web API 2 & Mongo DB
+
+                        <br /><br />
+                        <strong>Implemented features</strong><br /><br />
+                        Relevance feedback algorithms: Rocchio & Relevance Feature Estimation<br />
+                        Image features: MPEG 7 & Bag of Words
+                        <br />
+                        <br />
+                        Author:
+                        <img src="~/Images/me.png" style="width:120px" />
+                        <a href="http://ionut.mironica.ro" target="_blank">Ionut Mironica</a>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; @DateTime.Now.Year - ID-Search engine</p>
+            <p>Made with <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> in Romania</p>
+
+        </div>
+    </footer>
+</div>

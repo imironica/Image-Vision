@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSearchEngine.DTO", "ImageSearchEngine.DTO\ImageSearchEngine.DTO.csproj", "{8EF1ACA8-A22D-4777-B518-F9F77A11221E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSearchEngine.Core", "ImageSearchEngine.Core\ImageSearchEngine.Core.csproj", "{9BF7508E-BD21-4013-9591-AECDA83CB26A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSearchEngine.Services", "ImageSearchEngine.Services\ImageSearchEngine.Services.csproj", "{922D7C29-7D25-4108-A607-ED69A0C3AFE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSearchEngine.Web", "ImageSearchEngine.Web\ImageSearchEngine.Web.csproj", "{4B678B1E-79B5-454A-AE57-7DC17DCFC0B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSearchImage.FeatureGeneration", "ImageSearchImage.FeatureGeneration\ImageSearchImage.FeatureGeneration.csproj", "{84764D70-E10A-494F-B655-7C7FBDA844E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8EF1ACA8-A22D-4777-B518-F9F77A11221E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EF1ACA8-A22D-4777-B518-F9F77A11221E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EF1ACA8-A22D-4777-B518-F9F77A11221E}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EF1ACA8-A22D-4777-B518-F9F77A11221E}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{9BF7508E-BD21-4013-9591-AECDA83CB26A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BF7508E-BD21-4013-9591-AECDA83CB26A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BF7508E-BD21-4013-9591-AECDA83CB26A}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BF7508E-BD21-4013-9591-AECDA83CB26A}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{922D7C29-7D25-4108-A607-ED69A0C3AFE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{922D7C29-7D25-4108-A607-ED69A0C3AFE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{922D7C29-7D25-4108-A607-ED69A0C3AFE4}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{922D7C29-7D25-4108-A607-ED69A0C3AFE4}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{4B678B1E-79B5-454A-AE57-7DC17DCFC0B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B678B1E-79B5-454A-AE57-7DC17DCFC0B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B678B1E-79B5-454A-AE57-7DC17DCFC0B5}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B678B1E-79B5-454A-AE57-7DC17DCFC0B5}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{84764D70-E10A-494F-B655-7C7FBDA844E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84764D70-E10A-494F-B655-7C7FBDA844E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84764D70-E10A-494F-B655-7C7FBDA844E4}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{84764D70-E10A-494F-B655-7C7FBDA844E4}.Release|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 6
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://imagesearchengine.visualstudio.com/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ImageSearchImage.FeatureGeneration\\ImageSearchImage.FeatureGeneration.csproj
+		SccProjectName1 = ImageSearchImage.FeatureGeneration
+		SccLocalPath1 = ImageSearchImage.FeatureGeneration
+		SccProjectUniqueName2 = ImageSearchEngine.Core\\ImageSearchEngine.Core.csproj
+		SccProjectName2 = ImageSearchEngine.Core
+		SccLocalPath2 = ImageSearchEngine.Core
+		SccProjectUniqueName3 = ImageSearchEngine.DTO\\ImageSearchEngine.DTO.csproj
+		SccProjectName3 = ImageSearchEngine.DTO
+		SccLocalPath3 = ImageSearchEngine.DTO
+		SccProjectUniqueName4 = ImageSearchEngine.Services\\ImageSearchEngine.Services.csproj
+		SccProjectName4 = ImageSearchEngine.Services
+		SccLocalPath4 = ImageSearchEngine.Services
+		SccProjectUniqueName5 = ImageSearchEngine.Web\\ImageSearchEngine.Web.csproj
+		SccProjectName5 = ImageSearchEngine.Web
+		SccLocalPath5 = ImageSearchEngine.Web
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>Babylon.js sample code</title>
+    <!-- Babylon.js -->
+    <script src="hand.minified-1.2.js"></script>
+    <script src="cannon.js"></script>
+    <script src="oimo.js"></script>
+    <script src="babylon.js"></script>
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+        var canvas = document.getElementById("renderCanvas");
+        var engine = new BABYLON.Engine(canvas, true);
+
+        var createScene = function () {
+            var scene = new BABYLON.Scene(engine);
+
+            // Create camera and light
+            var light = new BABYLON.PointLight("Point", new BABYLON.Vector3(5, 10, 5), scene);
+            var camera = new BABYLON.ArcRotateCamera("Camera", 1, 0.8, 8, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+
+            // Create a sprite manager to optimize GPU ressources
+            // Parameters : name, imgUrl, capacity, cellSize, scene
+
+
+            //We create 2000 trees at random positions
+            for (var i = 1; i < 30; i++) {
+                for (var j = 0; j < 9; j++) {
+                    var imgName = "";
+                    if(i<10)
+                        imgName = "0" + String(i) + "_" + String(j) + ".jpg";
+                    else
+                        imgName = String(i) + "_" + String(j) + ".jpg";
+                    var imageRoot = "../db/" + imgName;
+
+                    var plane = BABYLON.Mesh.CreatePlane("plane", 100.0, scene);
+                    var material = new BABYLON.StandardMaterial("texture1", scene);
+                    material.diffuseTexture = new BABYLON.Texture(imageRoot, scene);
+                    material.diffuseTexture.uScale = 1.0;
+                    material.diffuseTexture.vScale = 1.0;
+                    //plane.material = material;
+
+
+ 
+                    plane.position.x = (i+j) * 3;
+       
+
+                    plane.material = material;
+                    //Some "dead" images :)
+                    /* if (Math.round(Math.random() * 5) == 0) {
+                         tree.angle = Math.PI * 90 / 180;
+                         tree.position.y = -0.3;
+                    }*/
+                    /*
+                    plane.actionManager = new BABYLON.ActionManager(scene);
+                    plane.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+                        alert("");
+                    }));*/  
+                }
+            }
+
+
+ 
+             
+            // compared click for sphere
+            var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.2, scene);
+            sphere.position.x = 2;
+            sphere.actionManager = new BABYLON.ActionManager(scene);
+            sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+                alert('Demo created by Ionut Mironica :)!');
+            }));
+
+
+  
+
+            return scene;
+        }
+
+
+        var scene = createScene();
+
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+
+        // Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>

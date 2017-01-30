@@ -1,0 +1,215 @@
+﻿body {
+    /*padding-top: 50px;*/
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+/* styles for validation helpers */
+.field-validation-error {
+    color: #b94a48;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
+
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.validation-summary-errors {
+    color: #b94a48;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+    display: none;
+}
+
+@media screen and (min-width: 750px) {
+    .img-show {
+        width: 180px;
+        max-height: 150px;
+    }
+
+        .img-show:hover {
+            cursor: pointer;
+            max-height: 153px;
+            width: 183px;
+        }
+
+    .cell-grid {
+        padding: 5px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        height: 200px;
+        width: 190px;
+    }
+
+    .popup-view-image {
+        max-width: 750px;
+        max-height: 750px;
+    }
+
+    .cell-grid-selected {
+        padding: 5px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        height: 200px;
+        width: 190px;
+        background-color: burlywood;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .img-show {
+        width: 120px;
+        max-height: 90px;
+    }
+
+        .img-show:hover {
+            cursor: pointer;
+            max-height: 93px;
+            width: 123px;
+        }
+
+    .cell-grid {
+        padding: 5px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        height: 140px;
+        width: 130px;
+    }
+
+    .cell-grid-selected {
+        padding: 5px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        height: 140px;
+        width: 130px;
+        background-color: burlywood;
+    }
+
+
+    .popup-view-image {
+        max-width: 400px;
+        max-height: 400px;
+    }
+}
+
+
+
+
+
+.img-show-history {
+    width: 90px;
+    max-height: 70px;
+}
+
+    .img-show-history:hover {
+        cursor: pointer;
+        max-height: 7 3px;
+        width: 93px;
+    }
+
+.cell-grid-history {
+    padding: 3px;
+    margin: 3px;
+    border: 1px solid #ddd;
+    height: 100px;
+    width: 100px;
+}
+
+
+
+.sidebar {
+    position: absolute;
+    position: fixed;
+    top: 0;
+    left: 0px;
+    transition: 100ms left;
+    z-index: 10;
+}
+
+.show {
+    left: -335px;
+}
+
+.navigation {
+    padding: 0;
+    margin: 0;
+    background-color: #f8f8f8;
+    color: #222222;
+    width: 385px;
+    height: 800px;
+    top: 0;
+    bottom: 0;
+    border: 2px #dddddd solid;
+    border-top-right-radius: 2em;
+    border-bottom-right-radius: 2em;
+}
+
+.footer {
+    position: fixed;
+    height: 70px;
+    bottom: 0;
+    padding-top: 20px;
+    width: 100%;
+    margin: 0 auto;
+    z-index: 11;
+    left: 0;
+    background-color: #f8f8f8;
+}
+
+ 
+@import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300);
+
+ 
+ 
+/* make keyframes that tell the start state and the end state of our object */
+@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+.fade-in {
+  opacity:0;  /* make things invisible upon start */
+  -webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+  -moz-animation:fadeIn ease-in 1;
+  animation:fadeIn ease-in 1;
+
+  -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+  -moz-animation-fill-mode:forwards;
+  animation-fill-mode:forwards;
+
+  -webkit-animation-duration:1.5s;
+  -moz-animation-duration:1.5s;
+  animation-duration:1.5s;
+}
+
+ 
+.fade-in.three {
+  -webkit-animation-delay: 0s;
+  -moz-animation-delay: 0s;
+  animation-delay: 0s;
+}
+
+ 
