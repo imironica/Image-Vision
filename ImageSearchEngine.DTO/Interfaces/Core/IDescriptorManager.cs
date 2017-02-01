@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ImageSearchEngine.DTO.Interfaces
 {
@@ -10,8 +6,6 @@ namespace ImageSearchEngine.DTO.Interfaces
     {
         void WriteImageDescriptor(string filePath, List<DocumentInfo> lstImages);
         List<DocumentInfo> GetImageDescriptor(string filePath);
-        List<ImageInfo> GetImagesDescriptor(string filePath);
-        List<TextInfo> GetTextDescriptor(string filePath); 
 
     }
 }

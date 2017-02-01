@@ -6,10 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ImageSearchEngine.DTO.Interfaces;
+using System.Configuration;
+using MongoDB.Driver;
+using System.Web.Hosting;
 
 namespace ImageSearchEngine.Core
 {
-    public class DescriptorManagerSimple: IDescriptorManager
+    public class DescriptorManagerFile : IDescriptorManager
     {
         public void WriteImageDescriptor(string filePath, List<DocumentInfo> lstImages)
         {
@@ -20,19 +23,8 @@ namespace ImageSearchEngine.Core
         {
             return ReadFromBinaryFile<List<DocumentInfo>>(filePath);
         }
-        public List<ImageInfo> GetImagesDescriptor(string filePath)
-        {
-            return ReadFromBinaryFile<List<ImageInfo>>(filePath);
-        }
-        public void WriteTextDescriptor(string filePath, List<TextInfo> lstDocs)
-        {
-            WriteToBinaryFile<List<TextInfo>>(filePath, lstDocs, false);
-        }
 
-        public List<TextInfo> GetTextDescriptor(string filePath)
-        {
-            return ReadFromBinaryFile<List<TextInfo>>(filePath);
-        }
+
         /// <summary>
         /// Writes the given object instance to a binary file.
         /// <para>Object type (and all child types) must be decorated with the [Serializable] attribute.</para>
@@ -59,11 +51,14 @@ namespace ImageSearchEngine.Core
         /// <returns>Returns a new instance of the object read from the binary file.</returns>
         private static T ReadFromBinaryFile<T>(string filePath)
         {
-            using (Stream stream = File.Open(filePath, FileMode.Open))
+            string path = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, filePath);
+            using (Stream stream = File.Open(path, FileMode.Open))
             {
                 var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
                 return (T)binaryFormatter.Deserialize(stream);
             }
         }
     }
+
+     
 }

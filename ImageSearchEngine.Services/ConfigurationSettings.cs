@@ -8,17 +8,13 @@ namespace ImageSearchEngine.Services
 {
     public class ConfigurationSettings
     {
-        public static List<DocumentDescriptor> GetImageDescriptorsPerDb(string dbName)
+        public static List<DescriptorMetadata> GetImageDescriptorsPerDb(string dbName)
         {
             var lstReturnedDescriptors = GetConfigurations()
                                             .Single(x => x.Code == dbName)
-                                            .LstDocumentDescriptorFiles;
-            List<DocumentDescriptor> lstImageDescriptors = new List<DocumentDescriptor>();
-            foreach (var desc in lstReturnedDescriptors)
-            {
-                lstImageDescriptors.Add(desc.DocumentDescriptor);
-            }
-            return lstImageDescriptors;
+                                            .DescriptorsCodes;
+
+            return lstReturnedDescriptors;
         }
 
         public static List<ImageMetric> GetImageMetricsPerDb(string descriptorName)
@@ -48,40 +44,11 @@ namespace ImageSearchEngine.Services
             var lstDatabases = new List<DocumentDatabase>();
             var lstImageDescriptors = GetImageDescriptors();
 
-            DocumentDatabase db1 = new DocumentDatabase() { Id = 1, Code = "Preclin", Folder = "db", Name = "Medical", Icon = "glyphicon glyphicon-plus" };
-            db1.LstDocumentDescriptorFiles.Add(
-                new DocumentDescriptorFile()
-                {
-                    Id = 1,
-                    FileName = "~/PRECLIN_CSD.txt",
-                    DocumentDescriptor = lstImageDescriptors[0]
-                });
-            db1.LstDocumentDescriptorFiles.Add(
-               new DocumentDescriptorFile()
-               {
-                   Id = 2,
-                   FileName = "~/PRECLIN_CLD.txt",
-                   DocumentDescriptor = lstImageDescriptors[1]
-               });
-            db1.LstDocumentDescriptorFiles.Add(
-               new DocumentDescriptorFile()
-               {
-                   Id = 3,
-                   FileName = "~/PRECLIN_EHD.txt",
-                   DocumentDescriptor = lstImageDescriptors[2]
-               });
-            db1.LstDocumentDescriptorFiles.Add(
-              new DocumentDescriptorFile()
-              {
-                  Id = 4,
-                  FileName = "~/PRECLIN_PCA.txt",
-                  DocumentDescriptor = lstImageDescriptors[7],
-                  UsePCA = true
-              });
+            DocumentDatabase db1 = new DocumentDatabase() { Id = 1, Code = "medicalDb", Folder = "db", Name = "Cancer database", Icon = "glyphicon glyphicon-plus" };
+            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CSD", Name = "Color Structure Descriptor"});
+            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CLD", Name = "Color Layout Descriptor" });
 
             lstDatabases.Add(db1);
-
-          
             return lstDatabases;
         }
 

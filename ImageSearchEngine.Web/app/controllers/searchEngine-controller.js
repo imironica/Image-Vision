@@ -2,8 +2,8 @@
     angular.module('searchEngineApp').controller('SearchEngineCtrl', function ($scope, searchEngineService) {
 
         var vm = this;
-        $scope.selectedDatabase = "Preclin";
-        $scope.selectedDescriptor = "1";
+        $scope.selectedDatabase = "medicalDb";
+        $scope.selectedDescriptor = "CSD";
         $scope.selectedMetric = "1";
         $scope.showLoader = false;
         $scope.state = true;

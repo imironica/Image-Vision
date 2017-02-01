@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,8 @@ using System.Threading.Tasks;
 namespace ImageSearchEngine.DTO
 {
     [Serializable()]
-    public class DocumentInfo
+    [BsonIgnoreExtraElements]
+    public class DocumentInfo 
     {
         public DocumentInfo()
         {
@@ -16,14 +18,25 @@ namespace ImageSearchEngine.DTO
 
         public string Root { get; set; }
         public string ImageUrl { get; set; }
+        public string DocumentName { get; set; }
         public string Description { get; set; }
         public Dictionary<string, double[]> LstDescriptors { get; set; }
-        public bool Selected { get; set; }
-        public double Distance { get; set; }
 
-        public List<Comment> Comments { get; set; }
+        [field: NonSerializedAttribute()]
+        private bool selected;
+        public bool Selected {
+            get { return selected; }
+            set { selected = value; }
+        }
 
-        public List<Face> Faces { get; set; }
+        [field: NonSerializedAttribute()]
+        private double distance;
+        public double Distance
+        {
+            get { return distance; }
+            set { distance = value; }
+        }
+        public Face[] Faces { get; set; }
     }
 
     [Serializable()]

@@ -17,9 +17,9 @@ namespace ImageSearchEngine.Web.Controllers
     {
 
         public IDescriptorManager descriptorManager;
-        public Design3DController()
+        public Design3DController(IDescriptorManager descriptorManagerType)
         {
-            descriptorManager = new DescriptorManagerSimple();
+            descriptorManager = descriptorManagerType;
         }
 
 

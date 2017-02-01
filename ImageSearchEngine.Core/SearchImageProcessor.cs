@@ -12,9 +12,9 @@ namespace ImageSearchEngine.Core
 {
     public class SearchImageProcessor : ISearchImageProcessor
     {
-        public List<DocumentInfo> SearchSimilarImage(List<DocumentInfo> db, DocumentInfo searchedImage, string metricType, string root, int providedResults, string processingType)
+        public List<DocumentInfo> SearchSimilarImage(List<DocumentInfo> db, DocumentInfo searchedImage, string metricType, string root, int providedResults, string processingType, string descriptorName)
         {
-            var descLabel = "DESC";
+            var descLabel = descriptorName;
             if (searchedImage == null)
                 throw new Exception("Image not found in the current database!");
 
@@ -41,7 +41,7 @@ namespace ImageSearchEngine.Core
                 {
                     Description = x.Description,
                     Root = root,
-                    ImageUrl = x.ImageUrl,
+                    ImageUrl = x.DocumentName,
                     Distance = x.Distance
                 }).OrderBy(x => x.Distance).Take(providedResults);
             else
@@ -49,7 +49,7 @@ namespace ImageSearchEngine.Core
                 {
                     Description = x.Description,
                     Root = root,
-                    ImageUrl = x.ImageUrl,
+                    ImageUrl = x.DocumentName,
                     Distance = x.Distance
                 }).OrderByDescending(x => x.Distance).Take(providedResults);
 

@@ -2,7 +2,7 @@
     angular.module('searchEngineApp').controller('SearchEngine3DCtrl', function ($scope, searchEngineService) {
 
         var vm = this;
-        $scope.selectedDatabase = "Preclin";
+        $scope.selectedDatabase = "medicalDb";
         $scope.numberOfImages = 300;
         $scope.showLoader = false;
         $scope.engine = null;

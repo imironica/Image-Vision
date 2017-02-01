@@ -19,124 +19,118 @@ namespace TestAccord.Controllers
     {
         public IDescriptorManager descriptorManager;
         public ISearchImageProcessor searchImageProcessor;
-        public ImageSearchEngineController()
+
+        public ImageSearchEngineController(IDescriptorManager descriptorManagerType)
         {
-            descriptorManager = new DescriptorManagerSimple();
+            descriptorManager = descriptorManagerType;
             searchImageProcessor = new SearchImageProcessor();
         }
 
+        private List<DocumentInfo> GetDocumentsDb(string dbName)
+        {
+            if (HttpContext.Current.Application[dbName] == null)
+                HttpContext.Current.Application[dbName] = descriptorManager.GetImageDescriptor(dbName);
+            return (List<DocumentInfo>)HttpContext.Current.Application[dbName];
+        }
 
+        /// <summary>
+        /// Show random images from the database
+        /// </summary>
         [System.Web.Http.Route("AllImages/{dbName}/{numberOfImages}")]
         [System.Web.Http.HttpGet]
         public IHttpActionResult GetAllImage(string dbName, int numberOfImages)
         {
-            int numberOfShownImages = numberOfImages;
-            List<DocumentInfo> lstImages = new List<DocumentInfo>();
             string root = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().Folder;
-
-            var descriptorFile = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().LstDocumentDescriptorFiles.FirstOrDefault().FileName;
+            var lstImages = GetDocumentsDb(dbName);
 
             try
             {
-                var path = System.Web.Hosting.HostingEnvironment.MapPath(descriptorFile);
-
-                if (HttpContext.Current.Application[path] == null)
-                    HttpContext.Current.Application[path] = descriptorManager.GetImageDescriptor(path);
-                lstImages = (List<DocumentInfo>)HttpContext.Current.Application[path];
-
                 var lstReturnedImages = lstImages.Select(x => new DocumentInfo()
                 {
                     Description = x.Description,
                     Root = root,
-                    ImageUrl = x.ImageUrl,
+                    ImageUrl = x.Description,
                     Distance = x.Distance
                 }).OrderBy(x => x.Distance);
 
                 int unixTime = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
                 var rnd = new Random(unixTime);
-                return Json(lstReturnedImages.OrderBy(a => rnd.Next()).Take(numberOfShownImages));
+                return Json(lstReturnedImages.OrderBy(a => rnd.Next()).Take(numberOfImages));
             }
             catch (Exception ex)
             {
                 return Json(ex);
             }
-
         }
 
 
+        /// <summary>
+        /// Search a similar image in the database
+        /// </summary>
+        [System.Web.Http.Route("SearchImage/{imageName}/{dbName}/{metric}/{descriptor}/{providedResults}/{selectedProcessing}")]
+        [System.Web.Http.HttpGet]
+        public IHttpActionResult GetImage([FromUri] string imageName, 
+                                          [FromUri] string dbName, 
+                                          [FromUri] string metric, 
+                                          [FromUri] string descriptor, 
+                                          [FromUri] int providedResults, 
+                                          [FromUri] string selectedProcessing)
+        {
+            imageName = imageName.Replace("!", "\\");
+            var root = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().Folder;
+            var lstImages = GetDocumentsDb(dbName);
+
+            var searchedImage = lstImages.Where(x => x.DocumentName.ToUpper() == imageName.ToUpper().Trim()).FirstOrDefault();
+            var lstReturnedImages = searchImageProcessor.SearchSimilarImage(lstImages, searchedImage, metric, root, providedResults, selectedProcessing, descriptor);
+            return Json(lstReturnedImages);
+        }
+
+        /// <summary>
+        /// Search a similar image from a link
+        /// </summary>
         [System.Web.Http.Route("SearchImageLink")]
         [System.Web.Http.HttpPost]
         public IHttpActionResult SearchImageLink([FromBody] Query query)
         {
-
             var root = ConfigurationSettings.GetDatabases().Where(x => x.Code == query.DbName).FirstOrDefault().Folder;
-            var descriptorFile = ConfigurationSettings.GetDatabases().Where(x => x.Code == query.DbName).FirstOrDefault().LstDocumentDescriptorFiles.Where(y => y.DocumentDescriptor.Id.ToString() == query.Descriptor).FirstOrDefault().FileName;
-            var path = System.Web.Hosting.HostingEnvironment.MapPath(descriptorFile);
-            if (HttpContext.Current.Application[path] == null)
-                HttpContext.Current.Application[path] = descriptorManager.GetImageDescriptor(path);
-            var lstImages = (List<DocumentInfo>)HttpContext.Current.Application[path];
+            var lstImages = GetDocumentsDb(query.DbName);
+
             DocumentInfo searchedImage = null;
-
-            if (query.ImageLink.Trim() == string.Empty)
-            {
-
-            }
-
             var request = WebRequest.Create(query.ImageLink);
 
             using (var response = request.GetResponse())
             using (var stream = response.GetResponseStream())
             {
                 var image = Bitmap.FromStream(stream);
-
-                double[] desc = DescriptorComputation.ComputeDescriptor(descriptorFile, (Bitmap)image);
+                double[] desc = DescriptorComputation.ComputeDescriptor(query.Descriptor, (Bitmap)image);
                 var valueDesc = new Dictionary<string, double[]>();
-                valueDesc.Add("DESC", desc);
+                valueDesc.Add(query.Descriptor, desc);
                 searchedImage = new DocumentInfo() { LstDescriptors = valueDesc };
             }
 
-
-            var lstReturnedImages = searchImageProcessor.SearchSimilarImage(lstImages, searchedImage, query.Metric, root, query.ProvidedResults, ProcessingTypeEnum.OneCPU.ToString());
+            var lstReturnedImages = searchImageProcessor.SearchSimilarImage(lstImages, searchedImage, query.Metric, root, query.ProvidedResults, ProcessingTypeEnum.OneCPU.ToString(), query.Descriptor);
             return Json(lstReturnedImages);
         }
 
-        [System.Web.Http.Route("SearchImage/{imageName}/{dbName}/{metric}/{descriptor}/{providedResults}/{selectedProcessing}")]
-        [System.Web.Http.HttpGet]
-        public IHttpActionResult GetImage([FromUri] string imageName, [FromUri] string dbName, [FromUri] string metric, [FromUri] string descriptor, [FromUri] int providedResults, [FromUri] string selectedProcessing)
-        {
-            imageName = imageName.Replace("!", "\\");
-            var root = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().Folder;
-            var descriptorFile = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().LstDocumentDescriptorFiles.Where(y => y.DocumentDescriptor.Id.ToString() == descriptor).FirstOrDefault().FileName;
-            var path = System.Web.Hosting.HostingEnvironment.MapPath(descriptorFile);
-            if (HttpContext.Current.Application[path] == null)
-                HttpContext.Current.Application[path] = descriptorManager.GetImageDescriptor(path);
-            var lstImages = (List<DocumentInfo>)HttpContext.Current.Application[path];
-
-            var searchedImage = lstImages.Where(x => x.ImageUrl.Replace("\\", "") == imageName.Replace("\\", "")).FirstOrDefault();
-            var lstReturnedImages = searchImageProcessor.SearchSimilarImage(lstImages, searchedImage, metric, root, providedResults, selectedProcessing);
-            return Json(lstReturnedImages);
-        }
-
+        /// <summary>
+        /// Perform a relevance feedback algorithm
+        /// </summary>
         [System.Web.Http.Route("SearchImageRF")]
         [System.Web.Http.HttpPost]
         public IHttpActionResult SearchImageRF([FromBody] Query rfQuery)
         {
             ///ROCCHIO
-
             var dbName = rfQuery.DbName;
             var descriptor = rfQuery.Descriptor;
             var providedResults = rfQuery.ProvidedResults;
             var images = rfQuery.Images;
 
             var results = JsonConvert.DeserializeObject<List<DocumentInfo>>(images.ToString());
-            string descLabel = "DESC";
-            var descriptorFile = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().LstDocumentDescriptorFiles.Where(y => y.DocumentDescriptor.Id.ToString() == descriptor).FirstOrDefault().FileName;
+            string descLabel = rfQuery.Descriptor;
+            var descriptorFile = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().DescriptorsCodes.FirstOrDefault().Id;
             var root = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().Folder;
-            var path = System.Web.Hosting.HostingEnvironment.MapPath(descriptorFile);
-            if (HttpContext.Current.Application[path] == null)
-                HttpContext.Current.Application[path] = descriptorManager.GetImageDescriptor(path);
+            var lstImages = GetDocumentsDb(rfQuery.DbName);
 
-            var lstImages = (List<DocumentInfo>)HttpContext.Current.Application[path];
 
             List<DocumentInfo> selectedRelevantImages = (from image in lstImages
                                                          join result in results on image.ImageUrl equals result.ImageUrl
@@ -180,11 +174,9 @@ namespace TestAccord.Controllers
             ////RFE
             if (rfQuery.RFAlgorithm == "1")
             {
-
                 var featureSize = selectedRelevantImages[0].LstDescriptors[descLabel].Length;
                 double[] weights = new double[featureSize];
                 double[] meanList = new double[featureSize];
-
 
                 foreach (var relevantImage in selectedRelevantImages)
                 {
@@ -193,6 +185,7 @@ namespace TestAccord.Controllers
                         meanList[i] += relevantImage.LstDescriptors[descLabel][i];
                     }
                 }
+
                 for (int i = 0; i < featureSize; i++)
                 {
                     meanList[i] /= selectedRelevantImages.Count;
@@ -244,24 +237,24 @@ namespace TestAccord.Controllers
             return Json(lstReturnedImages);
         }
 
-
+        /// <summary>
+        /// Search images from the same folder
+        /// </summary>
         [System.Web.Http.Route("SearchImagesSameEvent/{imageName}/{dbName}/{metric}/{descriptor}/{providedResults}/{selectedProcessing}")]
         [System.Web.Http.HttpGet]
         public IHttpActionResult SearchImagesSameEvent([FromUri] string imageName, [FromUri] string dbName, [FromUri] string metric, [FromUri] string descriptor, [FromUri] int providedResults, [FromUri] string selectedProcessing)
         {
-            string descLabel = "DESC";
             var searchNameCategory = imageName.Substring(1);
             string categoryName = searchNameCategory.Substring(0, searchNameCategory.IndexOf('!') < 0 ? 0 : searchNameCategory.IndexOf('!'));
             imageName = imageName.Replace("!", "\\");
             var root = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().Folder;
-            var descriptorFile = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().LstDocumentDescriptorFiles.Where(y => y.DocumentDescriptor.Id.ToString() == descriptor).FirstOrDefault().FileName;
-            var path = System.Web.Hosting.HostingEnvironment.MapPath(descriptorFile);
-            if (HttpContext.Current.Application[path] == null)
-                HttpContext.Current.Application[path] = descriptorManager.GetImageDescriptor(path);
-            var lstAllImages = (List<DocumentInfo>)HttpContext.Current.Application[path];
+            var descriptorFile = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().DescriptorsCodes.FirstOrDefault().Id;
+
+            var lstAllImages = GetDocumentsDb(dbName);
+
             var lstImages = lstAllImages.Where(x => x.ImageUrl.Contains(categoryName)).ToList();
             var searchedImage = lstImages.Where(x => x.ImageUrl.Replace("\\", "") == imageName.Replace("\\", "")).FirstOrDefault();
-            var lstReturnedImages = searchImageProcessor.SearchSimilarImage(lstImages, searchedImage, metric, root, providedResults, selectedProcessing);
+            var lstReturnedImages = searchImageProcessor.SearchSimilarImage(lstImages, searchedImage, metric, root, providedResults, selectedProcessing, descriptor);
             return Json(lstReturnedImages);
         }
 
@@ -302,9 +295,7 @@ namespace TestAccord.Controllers
             }
             List<DocumentInfo> lstImages = new List<DocumentInfo>();
             string root = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().Folder;
-
-            var descFiles = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().LstDocumentDescriptorFiles;
-            var descriptorFile = descFiles.Where(y => y.UsePCA).FirstOrDefault().FileName;
+            var descriptorFile = "PCA";
 
             try
             {
@@ -316,9 +307,9 @@ namespace TestAccord.Controllers
 
                 var lstReturnedImages = lstImages.Select(obj => new DocumentPCAInfo()
                 {
-                    x = obj.LstDescriptors["DESC"][0],
-                    y = obj.LstDescriptors["DESC"][1],
-                    z = obj.LstDescriptors["DESC"][2],
+                    x = obj.LstDescriptors[descriptorFile][0],
+                    y = obj.LstDescriptors[descriptorFile][1],
+                    z = obj.LstDescriptors[descriptorFile][2],
                     image = "../" + obj.Root + "/" + obj.ImageUrl
                 });
 

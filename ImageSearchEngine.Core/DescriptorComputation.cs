@@ -21,7 +21,7 @@ namespace ImageSearchEngine.Core
         public static double[] ComputeDescriptor(string descriptorName, Bitmap image)
         {
             double[] descriptor = new double[0];
-            if (descriptorName.Contains("_CSD"))
+            if (descriptorName.Contains("CSD"))
             {
                 descriptor = ComputeScalableColorMPEG7(image);
             }
@@ -29,7 +29,7 @@ namespace ImageSearchEngine.Core
             {
                 descriptor = ComputeColorLayoutMPEG7(image);
             }
-            if (descriptorName.Contains("_EHD"))
+            if (descriptorName.Contains("EHD"))
             {
                 descriptor = ComputeEdgeHistogramMPEG7(image);
             }
@@ -65,8 +65,6 @@ namespace ImageSearchEngine.Core
                         descriptor = DominantColorMPEG7(image);
                         break;
                     }
-
-
             }
 
             return descriptor;

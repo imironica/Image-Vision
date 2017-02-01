@@ -10,7 +10,7 @@ namespace ImageSearchEngine.DTO
     {
         public DocumentDatabase()
         {
-            LstDocumentDescriptorFiles = new List<DocumentDescriptorFile>();
+            DescriptorsCodes = new List<DescriptorMetadata>();
         }
 
         public int Id { get; set; }
@@ -18,6 +18,6 @@ namespace ImageSearchEngine.DTO
         public string Code { get; set; }
         public string Folder { get; set; }
         public string Icon { get; set; }
-        public List<DocumentDescriptorFile> LstDocumentDescriptorFiles { get; set; }
+        public List<DescriptorMetadata> DescriptorsCodes { get; set; }
     }
 }

@@ -6,16 +6,12 @@ using System.Threading.Tasks;
 
 namespace ImageSearchEngine.DTO
 {
-    public class DocumentDescriptorFile
+    public class DescriptorMetadata
     {
-        public DocumentDescriptorFile()
+        public DescriptorMetadata()
         {
-            UsePCA = false;
         }
-
-        public int Id { get; set; }
-        public string FileName { get; set; }
-        public DocumentDescriptor DocumentDescriptor { get; set; }
-        public bool UsePCA { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
     }
 }

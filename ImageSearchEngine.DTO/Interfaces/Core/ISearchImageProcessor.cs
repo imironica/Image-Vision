@@ -9,6 +9,6 @@ namespace ImageSearchEngine.DTO.Interfaces
 {
     public interface ISearchImageProcessor
     {
-        List<DocumentInfo> SearchSimilarImage(List<DocumentInfo> db, DocumentInfo searchedImage, string metricType, string root, int providedResults, string processingType);
+        List<DocumentInfo> SearchSimilarImage(List<DocumentInfo> db, DocumentInfo searchedImage, string metricType, string root, int providedResults, string processingType, string descriptorName);
     }
 }

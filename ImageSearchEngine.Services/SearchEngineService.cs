@@ -16,7 +16,7 @@ namespace ImageSearchEngine.Services
 
         public SearchEngineService()
         {
-            descriptorManager = new DescriptorManagerSimple();
+            descriptorManager = new DescriptorManagerMongoDb();
             searchImageProcessor = new SearchImageProcessor();
         }
 
@@ -26,11 +26,9 @@ namespace ImageSearchEngine.Services
             List<DocumentInfo> lstImages = new List<DocumentInfo>();
             string root = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().Folder;
 
-            var descriptorFile = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().LstDocumentDescriptorFiles.FirstOrDefault().FileName;
-            //TODO
-            var path = descriptorFile;
+            var descriptorFile = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().DescriptorsCodes.FirstOrDefault().Id;
 
-            lstImages = descriptorManager.GetImageDescriptor(path);
+            lstImages = descriptorManager.GetImageDescriptor(descriptorFile);
 
             var lstReturnedImages = lstImages.Select(x => new DocumentInfo()
             {

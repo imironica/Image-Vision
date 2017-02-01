@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ImageSearchEngine.DTO
 {
+    [Serializable()]
     public class Face
     {
         public int X { get; set; }
