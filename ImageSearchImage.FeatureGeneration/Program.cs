@@ -1,34 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using Accord.Imaging;
-using Accord.MachineLearning;
 using Accord.Math;
-using Accord.MachineLearning.VectorMachines;
-using Accord.MachineLearning.VectorMachines.Learning;
-using Accord.Statistics.Kernels;
 using ImageSearchEngine.DTO;
-using ImageSearchEngine.DTO.Enum;
 using ImageSearchEngine.Core;
 using Accord.Vision.Detection;
 using Accord.Vision.Detection.Cascades;
-using AForge.Video.FFMPEG;
-using System.Xml;
 using Accord.Statistics.Analysis;
 using MongoDB.Driver;
-using MongoDB.Bson;
 using System.Configuration;
 using ImageSearchEngine.DTO.Interfaces;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 
-namespace Test
+namespace FeatureGeneration
 {
-
     class Program
     {
         static void Main(string[] args)
@@ -40,21 +28,22 @@ namespace Test
             var program = container.Resolve<MainProgram>();
             program.Run();
         }
- 
     }
 
     class MainProgram
     {
+
         static IDescriptorManager _descriptorManager;
-        public static string ROOT = @"";
-        static string dbName = "";
-        static string featureNames = "";
-        static string fileExtension = "";
-        static bool setDefaultValues = true;
-        static bool computePCA = true;
-        static bool computeFaces = true;
-        static string db = ConfigurationManager.AppSettings["db"].ToString();
-        static string connectionString = ConfigurationManager.AppSettings["dbIp"].ToString();
+        static string _rootFolder = string.Empty;
+        static string _dbName = string.Empty;
+        static string _featureNames = string.Empty;
+        static string _fileExtension = string.Empty;
+        static bool _setDefaultValues = true;
+        static bool _computePCA = true;
+        static bool _computeFaces = false;
+        static bool _includeConcepts = false;
+        static string _db = ConfigurationManager.AppSettings["db"].ToString();
+        static string _connectionString = ConfigurationManager.AppSettings["dbIp"].ToString();
 
         public MainProgram(IDescriptorManager descriptorManager)
         {
@@ -63,13 +52,16 @@ namespace Test
 
         static void SetDefaultParametersValues()
         {
-            ROOT = ConfigurationManager.AppSettings["ROOT"].ToString();
-            dbName = ConfigurationManager.AppSettings["dbName"].ToString();
-            featureNames = ConfigurationManager.AppSettings["featureNames"].ToString();
-            computePCA = Convert.ToBoolean(ConfigurationManager.AppSettings["computePCA"].ToString());
-            fileExtension = ConfigurationManager.AppSettings["fileExtension"].ToString();
-            computeFaces = Convert.ToBoolean(ConfigurationManager.AppSettings["computeFaces"].ToString());
+            _rootFolder = ConfigurationManager.AppSettings["ROOT"].ToString();
+            _dbName = ConfigurationManager.AppSettings["dbName"].ToString();
+            _featureNames = ConfigurationManager.AppSettings["featureNames"].ToString();
+            _computePCA = Convert.ToBoolean(ConfigurationManager.AppSettings["computePCA"].ToString());
+            _fileExtension = ConfigurationManager.AppSettings["fileExtension"].ToString();
+            _computeFaces = Convert.ToBoolean(ConfigurationManager.AppSettings["computeFaces"].ToString());
+            _includeConcepts = Convert.ToBoolean(ConfigurationManager.AppSettings["includeConcepts"].ToString());
+
         }
+
 
         public void Run()
         {
@@ -78,19 +70,18 @@ namespace Test
             Console.WriteLine("0 - Exit: ");
 
             var option = Console.ReadLine();
-
             if (option == "1")
             {
-                if (!setDefaultValues)
+                if (!_setDefaultValues)
                 {
                     Console.WriteLine("Image database folder: ");
-                    ROOT = Console.ReadLine();
+                    _rootFolder = Console.ReadLine();
                     Console.WriteLine("Image database name: ");
-                    dbName = Console.ReadLine();
+                    _dbName = Console.ReadLine();
                     Console.WriteLine("Name of the features (comma separated): ");
-                    featureNames = Console.ReadLine();
+                    _featureNames = Console.ReadLine();
                     Console.WriteLine("Image extension: ");
-                    fileExtension = Console.ReadLine();
+                    _fileExtension = Console.ReadLine();
                 }
                 else
                 {
@@ -102,15 +93,15 @@ namespace Test
         }
 
         #region GenerateFeatures
-        public static void GenerateFeatures()
+        private static void GenerateFeatures()
         {
             Console.WriteLine("Start process");
-            string[] lstDescriptors = featureNames.Split(',');
+            string[] lstDescriptors = _featureNames.Split(',');
             var files = GetImageFilesList();
 
             if (files == null || files.Count == 0)
             {
-                Console.WriteLine("Start process");
+                Console.WriteLine("The folder does not contain any document");
                 return;
             }
 
@@ -127,11 +118,11 @@ namespace Test
                 {
                     ImageUrl = file.FullName,
                     Description = file.Name,
-                    DocumentName = file.Name,
-                    Root = ROOT,
+                    DocumentName = file.FullName.Replace(_rootFolder, string.Empty),
+                    Root = _rootFolder
                 };
 
-                if (computeFaces)
+                if (_computeFaces)
                 {
                     FaceDetection(detector, image, ref imageInfo);
                 }
@@ -147,10 +138,9 @@ namespace Test
                 }
 
                 lstImages.Add(imageInfo);
-
             }
 
-            if (computePCA)
+            if (_computePCA)
             {
                 Console.WriteLine("PCA compute... ");
 
@@ -159,10 +149,11 @@ namespace Test
                 double[,] data = new double[lstImages.Count, featureSize];
                 for (int i = 0; i < lstImages.Count; i++)
                 {
-                    for (int j = 0; j < featureSize; j++)
-                    {
-                        data[i, j] = lstImages[i].LstDescriptors[descriptorName][j];
-                    }
+                    if(lstImages[i].LstDescriptors.ContainsKey(descriptorName))
+                        for (int j = 0; j < featureSize; j++)
+                        {
+                            data[i, j] = lstImages[i].LstDescriptors[descriptorName][j];
+                        }
                 }
 
                 PrincipalComponentAnalysis pca = ComputePCA(data);
@@ -176,7 +167,56 @@ namespace Test
                 }
             }
 
-            _descriptorManager.WriteImageDescriptor(dbName, lstImages);
+            if (_includeConcepts)
+            {
+                ProcessConceptFile(ref lstImages);
+            }
+
+            _descriptorManager.WriteImageDescriptor(_dbName, lstImages);
+        }
+
+        private static void ProcessConceptFile(ref List<DocumentInfo> lstImages)
+        {
+            var filename = ConfigurationManager.AppSettings["fileConcepts"];
+
+            if (!string.IsNullOrEmpty(filename))
+            {
+                using (StreamReader sr = File.OpenText(filename))
+                {
+                    string line = String.Empty;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        var name = line.Substring(0, line.IndexOf("##"));
+                        var conceptsStr = line.Substring(line.IndexOf("##") + 2);
+                        var concepts = conceptsStr.Split('#');
+                        var imagePath = lstImages.Where(x => x.ImageUrl == name);
+                        if (imagePath != null)
+                        {
+                            var doc = imagePath.FirstOrDefault();
+                            if (doc != null)
+                            {
+                                int index = 0;
+                                int indexConcept = 0;
+                                var lstConcepts = new List<Concept>();
+                                doc.Concepts = new Concept[concepts.Length / 2];
+                                while (index < concepts.Length / 2)
+                                {
+                                    var concept = new Concept
+                                    {
+                                        Name = concepts[index],
+                                        Percentage = Convert.ToDouble(concepts[index + 1])
+                                    };
+
+                                    doc.Concepts[indexConcept++] = concept;
+                                    index = index + 2;
+                                }
+                            }
+                             
+                        }
+                        
+                    }
+                }
+            }
         }
 
         private static void FaceDetection(HaarObjectDetector detector, Bitmap image, ref DocumentInfo imageInfo)
@@ -200,11 +240,11 @@ namespace Test
         }
         #endregion
 
-
+        #region PrivateFunctions
         private static List<FileInfo> GetImageFilesList()
         {
             //Get all images from a folder
-            DirectoryInfo directory = new DirectoryInfo(ROOT);
+            DirectoryInfo directory = new DirectoryInfo(_rootFolder);
             var filesDir = directory.GetFiles();
             var files = new List<FileInfo>();
             if (filesDir != null)
@@ -218,7 +258,6 @@ namespace Test
                     files.Add(file);
                 }
             }
-
             return files;
         }
 
@@ -240,10 +279,10 @@ namespace Test
             detector.ScalingFactor = 1.5f;
             detector.UseParallelProcessing = false;
             detector.Suppression = 2;
-
             return detector;
         }
 
+        #endregion
     }
 
 }

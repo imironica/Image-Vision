@@ -102,7 +102,6 @@
                                         <select name="selectRF" id="selectRF" class="form-control" ng-model="selectedRF">
                                             <option value="1" selected="selected">Relevance Feature Estimation</option>
                                             <option value="2">Rocchio</option>
-
                                         </select>
                                     </div>
                                 </div>
@@ -147,6 +146,24 @@
                         <img ng-src="{{searchImageLink}}" class="img-show" />
                     </div>
                 </div>
+
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="searchConcept"> Search images using concept
+                    </label>
+                </div>
+                <div class="col-md-10 col-xs-12" ng-show="searchConcept">
+                    <div style="float:left">
+                        <input type="text" ng-model="searchImageConcept" class="form-control" placeholder="Image link: e.g., accordion, chair, cup, pizza .." style="width:400px;" />
+                    </div>
+                    <div style="float:left">
+                        <button type="button" class="btn btn-info" ng-click="searchImageFromConcept()">Search similar images</button>
+                    </div>
+                    <div style="float:right">
+                        <img ng-src="{{searchImageLink}}" class="img-show" />
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -235,7 +252,17 @@
                         <br /> Image name: {{currentImage.ImageUrl}}
                         <br /> Image description: {{currentImage.Description}}
                         <br /> Image source: {{currentImage.Root}}
-                        <br /> Similarity score: {{image.Distance}}
+                        <!-- <br /> Similarity score: {{image.Distance}}-->
+                        <br />
+                        <div ng-if="currentImage.Concepts">
+                            <strong>Detected concepts:</strong>
+
+                            <div ng-repeat="concept in currentImage.Concepts track by $index">
+                                <div ng-if="concept">
+                                    {{concept.Name}} - {{concept.Percentage}} <br />
+                                </div>
+                            </div>
+                        </div>
                         <div style="float:right; clear:both; margin-right:20px;">
                             <span ng-if="currentIndex > 0">
                                 <a href="#" id="navigation-toggle" ng-click="showPreviousImage(currentIndex)">

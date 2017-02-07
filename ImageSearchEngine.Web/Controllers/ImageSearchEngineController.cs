@@ -49,8 +49,9 @@ namespace TestAccord.Controllers
                 {
                     Description = x.Description,
                     Root = root,
-                    ImageUrl = x.Description,
-                    Distance = x.Distance
+                    ImageUrl = x.DocumentName,
+                    Distance = x.Distance,
+                    Concepts = x.Concepts
                 }).OrderBy(x => x.Distance);
 
                 int unixTime = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
@@ -86,6 +87,35 @@ namespace TestAccord.Controllers
         }
 
         /// <summary>
+        /// Search a similar image in the database
+        /// </summary>
+        [System.Web.Http.Route("GetImagesByConcept")]
+        [System.Web.Http.HttpPost]
+        public IHttpActionResult GetImagesByConcept([FromBody] Query query)
+        {
+       
+            var root = ConfigurationSettings.GetDatabases().Where(x => x.Code == query.DbName).FirstOrDefault().Folder;
+            var lstImages = GetDocumentsDb(query.DbName);
+
+            var searchedImages = lstImages.Where(x => x.Concepts != null && x.Concepts.Length > 0 && x.Concepts.Any(y=>y!= null && y.Name.Contains(query.Descriptor) && y.Percentage > 0.6));
+
+            if (searchedImages != null)
+            {
+                var imgs = searchedImages.Select(x => new DocumentInfo()
+                {
+                    Description = x.Description,
+                    Root = root,
+                    ImageUrl = x.DocumentName,
+                    Distance = x.Distance,
+                    Concepts = x.Concepts
+                }).ToList();
+                return Json(imgs);
+            }
+            else
+                return null;
+        }
+
+        /// <summary>)
         /// Search a similar image from a link
         /// </summary>
         [System.Web.Http.Route("SearchImageLink")]
@@ -139,82 +169,13 @@ namespace TestAccord.Controllers
 
             if (rfQuery.RFAlgorithm == "2") //Rocchio
             {
-                var featureSize = selectedRelevantImages[0].LstDescriptors[descLabel].Length;
-                double[] weights = new double[featureSize];
-                double[] meanList = new double[featureSize];
-
-
-                foreach (var relevantImage in selectedRelevantImages)
-                {
-                    for (int i = 0; i < featureSize; i++)
-                    {
-                        meanList[i] += relevantImage.LstDescriptors[descLabel][i];
-                    }
-                }
-                for (int i = 0; i < featureSize; i++)
-                {
-                    meanList[i] /= selectedRelevantImages.Count;
-                }
-
-                var features = meanList;
-                double distance = 0;
-                double[] featuresImage;
-                for (int i = 0; i < lstImages.Count; i++)
-                {
-                    distance = 0;
-                    featuresImage = lstImages[i].LstDescriptors[descLabel];
-                    for (int j = 0; j < features.Length; j++)
-                    {
-                        distance += (featuresImage[j] - features[j]) * (featuresImage[j] - features[j]);
-                    }
-                    lstImages[i].Distance = distance;
-                }
+                RocchioRF(descLabel, lstImages, selectedRelevantImages);
             }
 
             ////RFE
             if (rfQuery.RFAlgorithm == "1")
             {
-                var featureSize = selectedRelevantImages[0].LstDescriptors[descLabel].Length;
-                double[] weights = new double[featureSize];
-                double[] meanList = new double[featureSize];
-
-                foreach (var relevantImage in selectedRelevantImages)
-                {
-                    for (int i = 0; i < featureSize; i++)
-                    {
-                        meanList[i] += relevantImage.LstDescriptors[descLabel][i];
-                    }
-                }
-
-                for (int i = 0; i < featureSize; i++)
-                {
-                    meanList[i] /= selectedRelevantImages.Count;
-                }
-
-                foreach (var relevantImage in selectedRelevantImages)
-                {
-                    for (int i = 0; i < featureSize; i++)
-                    {
-                        weights[i] += (meanList[i] - relevantImage.LstDescriptors[descLabel][i]) * (meanList[i] - relevantImage.LstDescriptors[descLabel][i]);
-                    }
-                }
-
-                var features = selectedRelevantImages[0].LstDescriptors[descLabel];
-                double distance = 0;
-                double[] featuresImage;
-                for (int i = 0; i < lstImages.Count; i++)
-                {
-                    distance = 0;
-                    featuresImage = lstImages[i].LstDescriptors[descLabel];
-                    for (int j = 0; j < features.Length; j++)
-                    {
-                        if (weights[j] != 0)
-                            distance += (featuresImage[j] - features[j]) * (featuresImage[j] - features[j]) / weights[j];
-                        else
-                            distance += (featuresImage[j] - features[j]) * (featuresImage[j] - features[j]) * 2;
-                    }
-                    lstImages[i].Distance = distance;
-                }
+                RfeRF(descLabel, lstImages, selectedRelevantImages);
 
             }
             foreach (var item in lstImages.Where(w => results.Where(x => x.Selected).Select(y => y.ImageUrl).Contains(w.ImageUrl)))
@@ -231,10 +192,90 @@ namespace TestAccord.Controllers
                 Description = x.Description,
                 Root = root,
                 ImageUrl = x.ImageUrl,
-                Distance = x.Distance
+                Distance = x.Distance,
+                Concepts = x.Concepts
             }).OrderBy(x => x.Distance).Take(providedResults);
 
             return Json(lstReturnedImages);
+        }
+
+        private static void RfeRF(string descLabel, List<DocumentInfo> lstImages, List<DocumentInfo> selectedRelevantImages)
+        {
+            var featureSize = selectedRelevantImages[0].LstDescriptors[descLabel].Length;
+            double[] weights = new double[featureSize];
+            double[] meanList = new double[featureSize];
+
+            foreach (var relevantImage in selectedRelevantImages)
+            {
+                for (int i = 0; i < featureSize; i++)
+                {
+                    meanList[i] += relevantImage.LstDescriptors[descLabel][i];
+                }
+            }
+
+            for (int i = 0; i < featureSize; i++)
+            {
+                meanList[i] /= selectedRelevantImages.Count;
+            }
+
+            foreach (var relevantImage in selectedRelevantImages)
+            {
+                for (int i = 0; i < featureSize; i++)
+                {
+                    weights[i] += (meanList[i] - relevantImage.LstDescriptors[descLabel][i]) * (meanList[i] - relevantImage.LstDescriptors[descLabel][i]);
+                }
+            }
+
+            var features = selectedRelevantImages[0].LstDescriptors[descLabel];
+            double distance = 0;
+            double[] featuresImage;
+            for (int i = 0; i < lstImages.Count; i++)
+            {
+                distance = 0;
+                featuresImage = lstImages[i].LstDescriptors[descLabel];
+                for (int j = 0; j < features.Length; j++)
+                {
+                    if (weights[j] != 0)
+                        distance += (featuresImage[j] - features[j]) * (featuresImage[j] - features[j]) / weights[j];
+                    else
+                        distance += (featuresImage[j] - features[j]) * (featuresImage[j] - features[j]) * 2;
+                }
+                lstImages[i].Distance = distance;
+            }
+        }
+
+        private static void RocchioRF(string descLabel, List<DocumentInfo> lstImages, List<DocumentInfo> selectedRelevantImages)
+        {
+            var featureSize = selectedRelevantImages[0].LstDescriptors[descLabel].Length;
+            double[] weights = new double[featureSize];
+            double[] meanList = new double[featureSize];
+
+
+            foreach (var relevantImage in selectedRelevantImages)
+            {
+                for (int i = 0; i < featureSize; i++)
+                {
+                    meanList[i] += relevantImage.LstDescriptors[descLabel][i];
+                }
+            }
+            for (int i = 0; i < featureSize; i++)
+            {
+                meanList[i] /= selectedRelevantImages.Count;
+            }
+
+            var features = meanList;
+            double distance = 0;
+            double[] featuresImage;
+            for (int i = 0; i < lstImages.Count; i++)
+            {
+                distance = 0;
+                featuresImage = lstImages[i].LstDescriptors[descLabel];
+                for (int j = 0; j < features.Length; j++)
+                {
+                    distance += (featuresImage[j] - features[j]) * (featuresImage[j] - features[j]);
+                }
+                lstImages[i].Distance = distance;
+            }
         }
 
         /// <summary>
@@ -289,28 +330,18 @@ namespace TestAccord.Controllers
         public IHttpActionResult GetAllImage3D(string dbName, int numberOfImages)
         {
             int numberOfShownImages = numberOfImages;
-            if (dbName == "Endava")
-            {
-                numberOfShownImages = 100;
-            }
-            List<DocumentInfo> lstImages = new List<DocumentInfo>();
-            string root = ConfigurationSettings.GetDatabases().Where(x => x.Code == dbName).FirstOrDefault().Folder;
+            
+            var lstImages = GetDocumentsDb(dbName);
             var descriptorFile = "PCA";
 
             try
             {
-                var path = System.Web.Hosting.HostingEnvironment.MapPath(descriptorFile);
-
-                if (HttpContext.Current.Application[path] == null)
-                    HttpContext.Current.Application[path] = descriptorManager.GetImageDescriptor(path);
-                lstImages = (List<DocumentInfo>)HttpContext.Current.Application[path];
-
                 var lstReturnedImages = lstImages.Select(obj => new DocumentPCAInfo()
                 {
                     x = obj.LstDescriptors[descriptorFile][0],
                     y = obj.LstDescriptors[descriptorFile][1],
                     z = obj.LstDescriptors[descriptorFile][2],
-                    image = "../" + obj.Root + "/" + obj.ImageUrl
+                    image = "../" + obj.Root + "/" + obj.DocumentName
                 });
 
                 int unixTime = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;

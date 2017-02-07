@@ -41,10 +41,6 @@ namespace ImageSearchEngine.Core
 
             return values;
         }
-        public List<ImageInfo> GetImagesDescriptor(string filePath)
-        {
-            return new List<ImageInfo>();
-        }
 
     
     }

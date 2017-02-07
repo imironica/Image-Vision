@@ -250,3 +250,9 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/ImageSearchEngine.Web/db.buildings
+/ImageSearchEngine.Web/db.textures
+/ImageSearchEngine.Web/db.endava
+/ImageSearchEngine.Web/db.caltech.small
+/ImageSearchEngine.Web/db.caltech
+/ImageSearchEngine.Web/db_caltech_small

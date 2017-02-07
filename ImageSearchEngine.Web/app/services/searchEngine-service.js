@@ -10,6 +10,7 @@
         var service = {
             getImages: getImages,
             getImagesFromLink: getImagesFromLink,
+            getImagesFromConcept:getImagesFromConcept,
             getImagesRF: getImagesRF,
             getAllImages: getAllImages,
             getDescriptors: getDescriptors,
@@ -42,7 +43,16 @@
 
             return $http.post(url, rfQuery);
         }
-        
+
+        function getImagesFromConcept(concept, dbName) {
+            var url = "api/searchEngine/GetImagesByConcept";
+            var rfQuery = {};
+ 
+            rfQuery.DbName = dbName;
+            rfQuery.Descriptor = concept;
+             
+            return $http.post(url, rfQuery);
+        }
 
         function searchImagesSameEvent(imageName, dbName, metricCode, descriptorCode, providedResults, selectedProcessing) {
             var imageNameReplace = imageName.replace("\\", "!");

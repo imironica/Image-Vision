@@ -64,6 +64,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTO\Comment.cs" />
+    <Compile Include="DTO\Concept.cs" />
+    <Compile Include="DTO\DocumentPCAInfo.cs" />
     <Compile Include="DTO\Face.cs" />
     <Compile Include="DTO\DocumentDatabase.cs" />
     <Compile Include="DTO\DocumentDescriptor.cs" />

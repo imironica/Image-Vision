@@ -49,6 +49,12 @@ namespace ImageSearchEngine.Services
             db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CLD", Name = "Color Layout Descriptor" });
 
             lstDatabases.Add(db1);
+
+            db1 = new DocumentDatabase() { Id = 1, Code = "db_caltech_small", Folder = "db.caltech.small", Name = "Object database", Icon = "glyphicon glyphicon-plus" };
+            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CSD", Name = "Color Structure Descriptor" });
+            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CLD", Name = "Color Layout Descriptor" });
+
+            lstDatabases.Add(db1);
             return lstDatabases;
         }
 

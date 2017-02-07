@@ -101,6 +101,7 @@
                 $scope.showLoader = true;
                 $scope.currentImage = $scope.images[index];
                 $scope.currentIndex = index;
+                $scope.concepts = $scope.currentImage.Concepts;
                 $scope.showLoader = false;
             }
         }
@@ -171,6 +172,18 @@
         }
         $scope.searchImageFromLink = function () {
             searchEngineService.getImagesFromLink($scope.searchImageLink, $scope.selectedDatabase, $scope.selectedMetric, $scope.selectedDescriptor, $scope.numberOfImages, $scope.selectedProcessing)
+                .then(function (res) {
+                    $scope.images = res.data;
+                    $scope.showLoader = false;
+                },
+                function (error) {
+                    showError(error);
+                }
+           );
+        }
+
+        $scope.searchImageFromConcept = function () {
+            searchEngineService.getImagesFromConcept($scope.searchImageConcept, $scope.selectedDatabase)
                 .then(function (res) {
                     $scope.images = res.data;
                     $scope.showLoader = false;

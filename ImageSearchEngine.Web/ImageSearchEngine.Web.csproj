@@ -266,9 +266,7 @@
   <ItemGroup>
     <Content Include="app\controllers\searchEngine-controller.js" />
     <Content Include="app\controllers\searchEngine3D-controller.js" />
-    <Content Include="app\controllers\text-controller.js" />
     <Content Include="app\directives\searchEngine-directive.js" />
-    <Content Include="app\services\text-service.js" />
     <Content Include="app\searchEngine-module.js" />
     <Content Include="app\searchEngine-routes.js" />
     <Content Include="app\services\searchEngine-service.js" />
