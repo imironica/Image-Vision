@@ -74,7 +74,6 @@
     <Compile Include="DTO\ImageMetric.cs" />
     <Compile Include="DTO\RFQuery.cs" />
     <Compile Include="DTO\User.cs" />
-    <Compile Include="Enum\DescriptorTypeEnum.cs" />
     <Compile Include="Enum\MetricTypeEnum.cs" />
     <Compile Include="Enum\ProcessingTypeEnum.cs" />
     <Compile Include="Interfaces\Core\IDescriptorManager.cs" />

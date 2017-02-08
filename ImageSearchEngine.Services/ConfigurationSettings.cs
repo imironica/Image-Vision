@@ -43,11 +43,11 @@ namespace ImageSearchEngine.Services
         {
             var lstDatabases = new List<DocumentDatabase>();
 
-            DocumentDatabase db1 = new DocumentDatabase() { Id = 1, Code = "medicalDb", Folder = "db", Name = "Cancer database", Icon = "glyphicon glyphicon-plus" };
-            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CSD", Name = "Color Structure Descriptor"});
-            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CLD", Name = "Color Layout Descriptor" });
-            lstDatabases.Add(db1);
- 
+            DocumentDatabase db = new DocumentDatabase() { Id = 1, Code = "medicalDb", Folder = "db", Name = "Cancer database", Icon = "glyphicon glyphicon-plus" };
+            db.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CSD", Name = "Color Structure Descriptor"});
+            db.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CLD", Name = "Color Layout Descriptor" });
+            lstDatabases.Add(db);
+
             return lstDatabases;
         }
 

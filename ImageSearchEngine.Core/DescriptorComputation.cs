@@ -10,14 +10,7 @@ namespace ImageSearchEngine.Core
 {
     public static class DescriptorComputation
     {
-        public static double[] ComputeDescriptor(DescriptorTypeEnum descriptorType, string imageFileName)
-        {
-            double[] descriptor = new double[0];
-            Bitmap image = (Bitmap)Image.FromFile(imageFileName, true);
-
-            return ComputeDescriptor(descriptorType, image);
-        }
-
+ 
         public static double[] ComputeDescriptor(string descriptorName, Bitmap image)
         {
             double[] descriptor = new double[0];
@@ -33,6 +26,10 @@ namespace ImageSearchEngine.Core
             {
                 descriptor = ComputeEdgeHistogramMPEG7(image);
             }
+            if (descriptorName.Contains("DCD"))
+            {
+                descriptor = ComputeDominantColorMPEG7(image);
+            }
             var sum = descriptor.Sum();
             if (sum > 0)
                 for (int k = 0; k < descriptor.Length; k++)
@@ -40,36 +37,7 @@ namespace ImageSearchEngine.Core
             return descriptor;
         }
 
-        public static double[] ComputeDescriptor(DescriptorTypeEnum descriptorType, Bitmap image)
-        {
-            double[] descriptor = new double[0];
-            switch (descriptorType)
-            {
-                case DescriptorTypeEnum.ScalableColorMPEG7:
-                    {
-                        descriptor = ComputeScalableColorMPEG7(image);
-                        break;
-                    }
-                case DescriptorTypeEnum.EdgeHistogramMPEG7:
-                    {
-                        descriptor = ComputeEdgeHistogramMPEG7(image);
-                        break;
-                    }
-                case DescriptorTypeEnum.ColorLayoutMPEG7:
-                    {
-                        descriptor = ComputeColorLayoutMPEG7(image);
-                        break;
-                    }
-                case DescriptorTypeEnum.DominantColorMPEG7:
-                    {
-                        descriptor = DominantColorMPEG7(image);
-                        break;
-                    }
-            }
-
-            return descriptor;
-        }
-
+ 
         private static double[] ComputeScalableColorMPEG7(Bitmap image)
         {
             SCD_Descriptor scdDescriptor = new SCD_Descriptor();
@@ -116,7 +84,7 @@ namespace ImageSearchEngine.Core
             return ehdDescriptor.Apply(image);
         }
 
-        private static double[] DominantColorMPEG7(Bitmap image)
+        private static double[] ComputeDominantColorMPEG7(Bitmap image)
         {
             DCD_Descriptor dcdDescriptor = new DCD_Descriptor();
             dcdDescriptor.extractDescriptor(image);
