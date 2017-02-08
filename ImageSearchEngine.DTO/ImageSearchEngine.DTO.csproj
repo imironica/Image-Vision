@@ -80,11 +80,10 @@
     <Compile Include="Interfaces\Core\IDescriptorManager.cs" />
     <Compile Include="Interfaces\Core\IMetricsComputation.cs" />
     <Compile Include="Interfaces\Core\ISearchImageProcessor.cs" />
+    <Compile Include="Interfaces\Services\ICacheManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\Services\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

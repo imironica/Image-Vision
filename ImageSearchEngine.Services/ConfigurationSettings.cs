@@ -8,9 +8,9 @@ namespace ImageSearchEngine.Services
 {
     public class ConfigurationSettings
     {
-        public static List<DescriptorMetadata> GetImageDescriptorsPerDb(string dbName)
+        public static List<DescriptorMetadata> GetDocumentDescriptorsPerDb(string dbName)
         {
-            var lstReturnedDescriptors = GetConfigurations()
+            var lstReturnedDescriptors = GetDbConfigurations()
                                             .Single(x => x.Code == dbName)
                                             .DescriptorsCodes;
 
@@ -39,89 +39,37 @@ namespace ImageSearchEngine.Services
             return lstReturnedMetrics;
         }
 
-        private static List<DocumentDatabase> GetConfigurations()
+        private static List<DocumentDatabase> GetDbConfigurations()
         {
             var lstDatabases = new List<DocumentDatabase>();
-            var lstImageDescriptors = GetImageDescriptors();
 
             DocumentDatabase db1 = new DocumentDatabase() { Id = 1, Code = "medicalDb", Folder = "db", Name = "Cancer database", Icon = "glyphicon glyphicon-plus" };
             db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CSD", Name = "Color Structure Descriptor"});
             db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CLD", Name = "Color Layout Descriptor" });
-
             lstDatabases.Add(db1);
 
-            db1 = new DocumentDatabase() { Id = 1, Code = "db_caltech_small", Folder = "db.caltech.small", Name = "Object database", Icon = "glyphicon glyphicon-plus" };
+            db1 = new DocumentDatabase() { Id = 2, Code = "db_caltech", Folder = "db.caltech", Name = "Object database", Icon = "glyphicon glyphicon-plus" };
             db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CSD", Name = "Color Structure Descriptor" });
             db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CLD", Name = "Color Layout Descriptor" });
-
             lstDatabases.Add(db1);
+
+            db1 = new DocumentDatabase() { Id = 3, Code = "db_buildings", Folder = "db.buildings", Name = "Zurich buildings", Icon = "glyphicon glyphicon-plus" };
+            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CSD", Name = "Color Structure Descriptor" });
+            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CLD", Name = "Color Layout Descriptor" });
+            lstDatabases.Add(db1);
+
+            db1 = new DocumentDatabase() { Id = 4, Code = "db_endava", Folder = "db.endava", Name = "Endava files", Icon = "glyphicon glyphicon-plus" };
+            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CSD", Name = "Color Structure Descriptor" });
+            db1.DescriptorsCodes.Add(new DescriptorMetadata() { Id = "CLD", Name = "Color Layout Descriptor" });
+            lstDatabases.Add(db1);
+
             return lstDatabases;
         }
 
-        public static List<DocumentDatabase> GetDatabases()
+        public static List<DocumentDatabase> GetDatabasesList()
         {
-            return GetConfigurations();
+            return GetDbConfigurations();
         }
 
-        private static List<DocumentDescriptor> GetImageDescriptors()
-        {
-            var lstReturnedDescriptors = new List<DocumentDescriptor>();
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 1,
-                Name = "Color Structure Descriptor (MPEG 7)"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 2,
-                Name = "Color Layout Descriptor (MPEG 7)"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 3,
-                Name = "Color Edge Descriptor (MPEG 7)"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 4,
-                Name = "Bag of Words (SURF)"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 5,
-                Name = "Histograms of oriented gradients"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 6,
-                Name = "Discrete Cosinus Transform"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 7,
-                Name = "Gabor filters"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 8,
-                Name = "Principal Component Analysis"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 9,
-                Name = "Hu"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 10,
-                Name = "Moments"
-            });
-            lstReturnedDescriptors.Add(new DocumentDescriptor()
-            {
-                Id = 11,
-                Name = "Zernike"
-            });
-            return lstReturnedDescriptors;
-        }
     }
 }

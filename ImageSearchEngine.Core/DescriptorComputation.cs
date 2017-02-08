@@ -77,7 +77,7 @@ namespace ImageSearchEngine.Core
             {
                 scdDescriptor.Apply(image, 256, 0);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new double[64];
             }
