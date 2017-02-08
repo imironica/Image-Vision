@@ -43,25 +43,5 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://imagesearchengine.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = ImageSearchImage.FeatureGeneration\\ImageSearchImage.FeatureGeneration.csproj
-		SccProjectName1 = ImageSearchImage.FeatureGeneration
-		SccLocalPath1 = ImageSearchImage.FeatureGeneration
-		SccProjectUniqueName2 = ImageSearchEngine.Core\\ImageSearchEngine.Core.csproj
-		SccProjectName2 = ImageSearchEngine.Core
-		SccLocalPath2 = ImageSearchEngine.Core
-		SccProjectUniqueName3 = ImageSearchEngine.DTO\\ImageSearchEngine.DTO.csproj
-		SccProjectName3 = ImageSearchEngine.DTO
-		SccLocalPath3 = ImageSearchEngine.DTO
-		SccProjectUniqueName4 = ImageSearchEngine.Services\\ImageSearchEngine.Services.csproj
-		SccProjectName4 = ImageSearchEngine.Services
-		SccLocalPath4 = ImageSearchEngine.Services
-		SccProjectUniqueName5 = ImageSearchEngine.Web\\ImageSearchEngine.Web.csproj
-		SccProjectName5 = ImageSearchEngine.Web
-		SccLocalPath5 = ImageSearchEngine.Web
-	EndGlobalSection
+	
 EndGlobal
